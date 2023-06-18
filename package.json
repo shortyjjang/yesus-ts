@@ -1,24 +1,28 @@
 {
-  "name": "yesus",
+  "name": "yesus-next-ts",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
+    "local": "next build && next -p 3011",
+    "qa": "next build  &&  cross-env NODE_OPTIONS='--inspect' next dev",
+    "prod": "next build &&  cross-env NODE_OPTIONS='--inspect' next start",
+    "lint": "next lint",
+    "build": "next build"
   },
   "dependencies": {
-    "@types/node": "20.3.0",
-    "@types/react": "18.2.11",
-    "@types/react-dom": "18.2.4",
+    "@types/node": "20.3.1",
+    "@types/react": "18.2.12",
+    "@types/react-dom": "18.2.5",
     "autoprefixer": "10.4.14",
+    "axios": "^1.4.0",
     "eslint": "8.42.0",
-    "eslint-config-next": "13.4.5",
-    "next": "13.4.5",
+    "eslint-config-next": "13.4.6",
+    "next": "13.4.6",
     "postcss": "8.4.24",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-query": "^3.39.3",
+    "recoil": "^0.7.7",
     "tailwindcss": "3.3.2",
     "typescript": "5.1.3"
   }
