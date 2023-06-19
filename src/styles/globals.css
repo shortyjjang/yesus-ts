@@ -2,3 +2,73 @@
 @tailwind components;
 @tailwind utilities;
 
+:after,:before,:root {
+    --pointColor: #ffd900;
+    --defaultColor: #111;
+    --greenColor: #009e48;
+    --grayColor: #949494;
+    --lightGrayColor: #d1d1d1;
+    --backgroundColor: #f5f5f5;
+    --defaultSpace: 2.31rem
+}
+
+html {
+    font-size: 6px
+}
+
+@media screen and (min-width: 380px) and (min-height:640px) {
+    html {
+        font-size:6.3px
+    }
+}
+
+@media screen and (min-width: 410px) and (min-height:730px) {
+    html {
+        font-size:6.5px
+    }
+}
+
+@media screen and (min-width: 450px) and (min-height:730px) {
+    html {
+        font-size:6.7px
+    }
+}
+
+@media screen and (min-width: 500px) and (min-height:730px) {
+    html {
+        font-size:7px
+    }
+}
+
+@media screen and (min-width: 720px) and (min-height:730px) {
+    html {
+        font-size:7.5px
+    }
+}
+
+@media screen and (min-width: 1040px) {
+    html {
+        font-size:8px
+    }
+}
+
+body {
+    font-family: 'Noto Sans KR', sans-serif;
+    color: var(--defaultColor);
+    background-color: var(--backgroundColor);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 2rem;
+}
+legend, caption {
+    display: none;
+}
+input, button, textarea, select {
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 2rem;
+    appearance: none;
+}
+.fcg {color:var(--greenColor);}
+.fcy {color:var(--pointColor);}
+.bcy {background-color:var(--pointColor);}
+.bcg {background-color:var(--greenColor);}
