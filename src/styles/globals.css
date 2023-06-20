@@ -68,6 +68,10 @@ input, button, textarea, select {
     font-size: 2rem;
     appearance: none;
 }
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+}
 .fcg {color:var(--greenColor);}
 .fcy {color:var(--pointColor);}
 .bcy {background-color:var(--pointColor);}

@@ -1,8 +1,7 @@
-import { userInfo } from "@/atom/user";
+
 import dayjs from "dayjs";
 import Cookies from "js-cookie";;
 import { AuthApi } from "./api";
-import { AxiosResponse } from "axios";
 
 export const getaccessToken = async () => {
     let username = '',

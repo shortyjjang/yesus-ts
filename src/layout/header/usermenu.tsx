@@ -5,7 +5,7 @@ import { css } from "@emotion/react"
 import { userInfo } from "@/atom/user";
 import { cartList, CartType } from "@/atom/cart";
 import Link from "next/link"
-import { useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { mobileWidth } from "@/layout/header";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
@@ -13,9 +13,8 @@ import { getaccessToken } from "@/util/get_token";
 
 
 export default function UserMenu() {
-    const user = useRecoilValue(userInfo);
-    const setUser = useSetRecoilState(userInfo)
-    const cart:CartType[] = useRecoilValue(cartList)
+    const [user, setUser] = useRecoilState(userInfo)
+    const cart = useRecoilValue(cartList)
     useEffect(() => {
         const getToken = async () => {
             const request = await getaccessToken()
@@ -79,7 +78,7 @@ export default function UserMenu() {
                 background:var(--pointColor);
                 text-align:center;
             `}>{cart.length > 0 ? cart.reduce((a,b) => {
-                return a + b.quantity
+                return a + b.cartDetailOptions.reduce((c,d) => c+d.cartOrderCnt,0)
             },0): 0}</span></Link></div>
         </nav>
     )

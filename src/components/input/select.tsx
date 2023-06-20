@@ -26,10 +26,12 @@ export default function Select({
             background:url("/images/icon-arrow-down.svg") no-repeat ${color} calc(100% - 1.5rem) center/3rem;
             ${inlinCSS}
         `}
+        value={value}
+        onChange={setValue}
     >
         {placeholder && <option value="">선택하세요</option>}
         {options.map((item:string[]) => (
-            <option key={item[1]} value={item[1]} selected={value === item[1]}>{item[0]}</option>
+            <option key={item[1]} value={item[1]}>{item[0]}</option>
         ))}
     </select>
   )

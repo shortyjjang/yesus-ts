@@ -34,10 +34,10 @@ export default function SlideBanner({
     <Swiper
         pagination={pagination}
         modules={[Pagination, Autoplay]}
-        // autoplay={autoplay ? {
-        //     delay: 4500,
-        //     disableOnInteraction: false,
-        // }: false}
+        autoplay={autoplay ? {
+            delay: 4500,
+            disableOnInteraction: false,
+        }: false}
         css={css`
             ${inlineCSS ? inlineCSS : ''}
         `}
@@ -67,7 +67,7 @@ export default function SlideBanner({
           <div className="text"
             dangerouslySetInnerHTML={{ __html: banner.pbbsContents }}
           ></div>
-          {/* <Link href={banner.pbbsLinkUrl} title={banner.pbbsTitle}></Link> */}
+          <Link href={banner.pbbsLinkUrl} title={banner.pbbsTitle} className="absolute w-full h-full top-0 left-0"></Link>
         </SwiperSlide>
       ))}
     </Swiper>

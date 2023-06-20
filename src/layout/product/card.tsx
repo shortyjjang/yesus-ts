@@ -6,6 +6,7 @@ import Image from "next/image"
 import { price } from "@/util/price"
 import { useState } from "react"
 import InCart from "./in_cart"
+import Badge from "./badge"
 
 export type ItemCardType = {
     productId: number,
@@ -41,17 +42,12 @@ export default function ItemCard({
             <span className="relative block aspect-square" css={css`
                 ${saleStatus !== '판매중' ? 'filter:grayScale(100%);': ''}
             `}>
-                <Link href={`/product/${productId}`}>
-                    <Image src={listImageUrl} alt={productName} fill={true} css={css`
-                        object-fit:cover;
-                    `} priority={true} />
+                <Link href={`/product/${productId}`} className="flex w-full h-full relative">
+                    <Image src={listImageUrl} alt={productName} fill={true}
+                        className="absolute top-0 left-0 w-full h-full object-cover"
+                     priority={true} />
                     <span className="absolute left-4 top-4">{icons && icons.filter(icon => icon.useYn === 'Y').map((icon) => (
-                        <small key={icon.iconTypeDesc} className="inline-block px-2 border border-solid uppercase" css={css`
-                            border-radius:0.3rem;margin:0 0.4rem 0.4rem 0;
-                            ${icon.iconTypeDesc === 'hot' && `background:#000;color:var(--pointColor);`}
-                            ${icon.iconTypeDesc === '베스트상품' && `background:var(--pointColor);border-color:var(--pointColor);`}
-                            ${icon.iconTypeDesc === '친환경' && `border-color:var(--greenColor);color:var(--greenColor);background:#fff;`}
-                        `}>{icon.iconTypeDesc}</small>
+                        <Badge key={icon.iconTypeDesc} type={icon.iconTypeDesc} />
                     ))}</span>
                 </Link>
                 <button className="absolute bottom-6 right-6 rounded-full border-solid border-white" css={css`
@@ -71,7 +67,7 @@ export default function ItemCard({
                     color:var(--grayColor);font-size:1.9rem;
                 `}>{price(netPrice)}</span>}
             </Link>
-            {showCart && <InCart productId={productId} closeCart={setShowCart} />}
+            {/* {showCart && <InCart productId={productId} closeCart={setShowCart} />} */}
         </div>
     )
 }

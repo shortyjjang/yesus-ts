@@ -1,7 +1,8 @@
 
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react"
-import Container from "../../container"
+import Container from "../container"
+import { useRouter } from "next/router"
 
 export type CategoryType = {
     categoryId: number,
@@ -21,6 +22,7 @@ export default function CategoryList({
     setCategory: (categoryId: number) => void
     categories: CategoryType[]
 }) {
+    const router = useRouter()
     const CategoryButton = ({
         categoryId, 
         categoryName
@@ -37,7 +39,10 @@ export default function CategoryList({
                     font-weight:900;
                 ` : ''};
             `}
-            onClick={() => category !== categoryId && setCategory(categoryId)}
+            onClick={() => {
+                if(category === categoryId) return;
+                setCategory(categoryId)
+            }}
         >
             {categoryName}
         </div>

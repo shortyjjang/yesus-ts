@@ -6,7 +6,7 @@ import { useState } from 'react'
 import { useQuery } from 'react-query'
 import Confirm from '@/components/confirm'
 import { useRouter } from 'next/navigation'
-import Container from "../../container"
+import Container from "../container"
 import ItemCard from "./card"
 import { mobileWidth } from "@/layout/header"
 import SearchKeyword from "./search"

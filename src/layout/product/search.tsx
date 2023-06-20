@@ -4,13 +4,15 @@ import { css } from "@emotion/react"
 import { useForm } from 'react-hook-form'
 
 export default function SearchKeyword({
-    setKeyword
+    setKeyword,
+    keyword
 } : {
-    setKeyword: (keyword: string) => void
+    setKeyword: (keyword: string) => void,
+    keyword?: string
 }) {
     const { register, handleSubmit } = useForm({
         defaultValues: {
-            keyword: ''
+            keyword: keyword ? keyword : ''
         }
     })
     return(

@@ -2,37 +2,60 @@
 import { css } from "@emotion/react"
 import Container from "@/layout/container";
 import { mobileWidth } from "@/layout/header";
-import SlideBanner from "@/layout/header/product/banner";
-import ItemCard from "@/layout/header/product/card";
-import CategoryList, { CategoryType } from "@/layout/header/product/category";
-import SearchKeyword from "@/layout/header/product/search";
+import SlideBanner from "@/layout/product/banner";
+import ItemCard from "@/layout/product/card";
+import CategoryList, { CategoryType } from "@/layout/product/category";
+import SearchKeyword from "@/layout/product/search";
 import { Api, ApiResponseType } from "@/util/api";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import Select from "@/components/input/select";
+import { useRouter } from "next/router";
+import Head from "next/head";
 
-export default function ProductList() {
-  const [categoryId, setCategoryId] = useState<number | null>(null)
-  const [sort, setSort] = useState<string>('NEW_ORDER')
-  const [keyword, setKeyword] = useState<string>('')
-  const banner = useQuery(['banner', categoryId], async () => {
-    if(!categoryId) return;
-    return await getBanner(categoryId)
+export default function ProductList({
+    category
+}:{
+    category: CategoryType[]
+}) {
+    const router = useRouter()
+    const [categoryId, setCategoryId] = useState<number | null>(category[0]?.categoryId)
+    const [sort, setSort] = useState<string>('NEW_ORDER')
+    const [keyword, setKeyword] = useState<string>('')
+    const banner = useQuery(['banner', categoryId], async () => {
+        if(!categoryId) return;
+        return await getBanner(categoryId)
+    })
+    const product = useQuery(['products', {categoryId, keyword, sort}], async () => {
+        if(!categoryId) return;
+        return await getProductList(categoryId, keyword, sort)
   })
-  const product = useQuery(['categories', categoryId], async () => {
-    if(!categoryId) return;
-    return await getProductList(categoryId, keyword, sort)
-  })
-  const category = useQuery('categories', async () => {
-    const data = await getCategories()
-    if(data && data[0]) setCategoryId(data[0]?.categoryId)
-    return data
-  })
-  if(category.isLoading) return <></>
-  if(category.isError) return <></>
+  const replace = (queryType:string, value:string | number) => {
+    let query = router.query
+    if((
+        queryType === 'keyword' && !value) 
+        || (queryType === 'sort' && value === 'NEW_ORDER') 
+        || (queryType === 'category' && value === category[0]?.categoryId)
+    ){
+        delete query[queryType]
+    }
+    else query = {...query, [queryType]: String(value)}
+    router.replace({pathname : `/product`, query})
+
+  }
+  useEffect(() => {
+    if(!router.isReady) return;
+    if(router.query.category) setCategoryId(Number(router.query.category))
+    if(router.query.sort) setSort(String(router.query.sort))
+    if(router.query.keyword) setKeyword(String(router.query.keyword))
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  },[router.isReady])
   if(categoryId) return (
     <main>
-      {category.data && <>
+        <Head>
+            <title>{category ? `${category.find(cate => cate.categoryId === categoryId)?.categoryName === 'all' ? '단품' : category.find(cate => cate.categoryId === categoryId)?.categoryName} - `:''}예스어스</title>
+        </Head>
+      {category && <>
         {banner.data && banner.data.content && banner.data.content.length > 0 && <Container className='mb-20'
          inlineCSS={`
             @media (max-width:${mobileWidth}px) {padding-left:0;padding-right:0;}
@@ -44,13 +67,22 @@ export default function ProductList() {
             inlineCSS={bannerCSS}
         />
         </Container>}
-        {category.data && <CategoryList category={categoryId} setCategory={setCategoryId} categories={category.data} />}
+        {category && <CategoryList category={categoryId} setCategory={(categoryId) => {
+            setCategoryId(categoryId)
+            replace('category', categoryId)
+        }} categories={category} />}
         {product.data && (
         <Container>
-            <SearchKeyword setKeyword={setKeyword} />
+            <SearchKeyword setKeyword={(keyword) => {
+                setKeyword(keyword)
+                replace('keyword', keyword)
+            }} keyword={keyword} />
             <div className="flex justify-between items-center mb-8">
                 <div>총 <b className="fcg">{product.data?.content?.totalCount}</b>개</div>
-                <Select value={sort} setValue={(e) => setSort(e.target.value)} size="big" options={[
+                <Select value={sort} setValue={(e) => {
+                    setSort(e.target.value)
+                    replace('sort', e.target.value)
+                }} size="big" options={[
                     ['신상품순', 'NEW_ORDER'],
                     ['인기순', 'POPULAR_ORDER'],
                     ['낮은가격순', 'LOW_PRICE_ORDER'],
@@ -96,15 +128,45 @@ const getCategories = async () => {
   const response:ApiResponseType = await Api.get(`/api/category/v1/display`);
   if(response.content && response.content.flatList && response.content.flatList.find((category:CategoryType) => category.categoryName === '단품')) {
     let all = response.content.hierarchyList.find((category:CategoryType) => category.categoryName === '단품')
-    console.log(all)
     if(all && all.children) return [
-      all,
-      ...all.children
+        {
+            ...all,
+            categoryName: 'all'
+        },
+        ...all.children
     ]
-    return[
-      all
-    ]
+    return[{
+        ...all,
+        categoryName: 'all'
+    }]
   }
+}
+
+export async function getStaticProps() {
+    // const queryClient = new QueryClient()
+    try {
+        const data = await getCategories()
+    //     await Promise.all([
+    //       queryClient.prefetchQuery(['categories'], async () => {
+    //         const data = await getCategories()
+    //         return data
+    //       }),
+    //     ]);
+        
+        return {
+          props: {
+            // dehydratedState: dehydrate(queryClient),
+            category: data
+          },
+          revalidate: 10,
+        };
+    } catch (e) {
+        return {
+            notFound: true,
+        };
+    } finally {
+        // queryClient.clear();
+    }
 }
 
 const bannerCSS = `
