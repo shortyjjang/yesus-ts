@@ -2,7 +2,7 @@
 import { css } from '@emotion/react';
 import Confirm from '@/components/confirm'
 import { Api, ApiResponseType } from '@/util/api'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import { OptionItemType, ProductResponseType } from './detail'
 import { price } from '@/util/price';
@@ -21,10 +21,14 @@ import InputNumber from '@/components/input/number';
 
 export default function InCart({
     post,
-    setAlert
+    setAlert,
+    setShowCart,
+    showCart = false
 }:{
     post: ProductResponseType
     setAlert: (alert: string | null) => void
+    setShowCart?: (display: boolean) => void
+    showCart?: boolean
 }) {
     const user = useRecoilValue(userInfo)
     const [cart, setCart] = useRecoilState(cartList);
@@ -107,6 +111,8 @@ export default function InCart({
         setCart([...cart, params])
         setSelectedOptions([])
         setOptionStatus(post.optionGroups ? post.optionGroups.map(intial => ''): [])
+        setAlert('장바구니에 상품이 담겼습니다.')
+        showCart && setShowCart && setShowCart(false)
     }
     useEffect(() => {
         if(user.username) return;
@@ -160,6 +166,11 @@ export default function InCart({
           };
         localStorage.setItem("nPay", JSON.stringify([np]));
     })
+    useEffect(() => {
+        if(!showCart || post.optionUseYn === 'Y') return;
+        addCart()
+    },[])
+    if(post.optionUseYn === 'N' && showCart) return <></>
     return (
         <div>
             {post.optionUseYn === 'Y' && post.optionGroups && post.optionGroups.length > 0 && post.options && post.options.length > 0 && (
@@ -260,11 +271,11 @@ export default function InCart({
                 />
             )}
             {/* 비회원일 경우 네이버 버튼 노출 */}
-            {!user.username && <NaverBtn id="naver-pay-button" buttonCount={2} setAlert={setAlert} />}
+            {!user.username && !showCart && <NaverBtn id="naver-pay-button" buttonCount={2} setAlert={setAlert} />}
 
             <div className='flex gap-4'>
                 <Button onClick={addCart} className='w-full'>장바구니</Button>
-                <Button styleType='primary' onClick={orderItems} className='w-full'>구매하기</Button>
+                {!showCart && <Button styleType='primary' onClick={orderItems} className='w-full'>구매하기</Button>}
             </div>
         </div>
     )

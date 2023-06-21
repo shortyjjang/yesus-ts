@@ -6,8 +6,8 @@ import Link from 'next/link';
 import { useState } from 'react'
 import { useRecoilValue } from 'recoil';
 import { mobileWidth } from "@/layout/header";
-import Container from "../container";
-import SubMenu from "./submenu";
+import Container from "@/layout/container";
+import SubMenu from "@/layout/header/submenu";
 
 export const menus = [
     {

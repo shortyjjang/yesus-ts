@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from "@emotion/react"
-import Container from "../container"
+import Container from "@/layout/container"
 import Link from "next/link"
 import { mobileWidth } from "@/layout/header"
 

@@ -3,9 +3,9 @@
 import { css } from "@emotion/react"
 
 import { userInfo } from "@/atom/user";
-import { cartList, CartType } from "@/atom/cart";
+import { cartList } from "@/atom/cart";
 import Link from "next/link"
-import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { mobileWidth } from "@/layout/header";
 import Cookies from "js-cookie";
 import { useEffect } from "react";

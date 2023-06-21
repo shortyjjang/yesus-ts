@@ -3,9 +3,9 @@
 import { css } from "@emotion/react"
 import Image from "next/image"
 import Link from "next/link"
-import Container from "../container"
-import UserMenu from "./usermenu"
-import Navigation from "./navigation"
+import Container from "@/layout/container"
+import UserMenu from "@/layout/header/usermenu"
+import Navigation from "@/layout/header/navigation"
 import { useEffect, useRef } from "react"
 export const mobileWidth = 750
 
