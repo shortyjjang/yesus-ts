@@ -10,10 +10,15 @@ import Footer from '@/layout/footer';
 import { DefaultSeo } from 'next-seo'
 import SEO from '@/util/next-seo.config'
 import Head from "next/head";
+import { useEffect, useState } from "react";
 
 const queryClient = new QueryClient()
 
 export default function App({ Component, pageProps }: AppProps) {
+  const [isLoading, setIsLoading] = useState<boolean>(false)
+  useEffect(() => {
+    setIsLoading(true)
+  },[])
   return (
     <RecoilRoot>
       <DefaultSeo {...SEO} />
@@ -29,7 +34,7 @@ export default function App({ Component, pageProps }: AppProps) {
         <Hydrate state={pageProps.dehydratedState}>
           {/* devtools */}
           <ReactQueryDevtools initialIsOpen={process.env.NODE_ENV !== 'production'} />
-          <div className="flex flex-col justify-between min-h-screen">
+          {isLoading && <div className="flex flex-col justify-between min-h-screen">
             <div css={css`
               padding-top: calc(16rem + 2px);
               @media (min-width: ${mobileWidth}px) {
@@ -40,7 +45,7 @@ export default function App({ Component, pageProps }: AppProps) {
             <Component {...pageProps} mobileWidth={mobileWidth} />
             </div>
             <Footer />
-          </div>
+          </div>}
         </Hydrate>
       </QueryClientProvider>
     </RecoilRoot>

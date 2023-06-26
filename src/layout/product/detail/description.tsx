@@ -1,218 +1,20 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import { useParams } from 'next/navigation'
-import Cookies from "js-cookie";
-import Container from "@/layout/container";
-import TagRecipeList from "@/layout/recipes/tag_list";
-import { SwiperSlide, Swiper } from "swiper/react";
+import Container from '@/layout/container'
 
-import 'swiper/css'
-import Image from "next/image";
-import { mobileWidth } from "@/layout/header";
-import Badge from './badge';
-import { price } from '@/util/price';
-import InCart from './in_cart';
-import { useState } from 'react';
-import Confirm from '@/components/confirm';
-import { useRouter } from 'next/router';
-
-export default function ProductDetailView({
-  post
+export default function ProductDescription({
+    productDetailDescHtml
 }:{
-  post: ProductResponseType
+    productDetailDescHtml: string
 }) {
-  const [alert, setAlert] = useState<string | null>(null)
-  const router = useRouter()
   return (
-    <main>
-      {alert && <Confirm 
-        onClose={() => setAlert(null)}
-        onSuccess={alert === '로그인하시겠습니까?\n로그인 후 구매가 가능합니다.' ? () => router.push('/login') : undefined } 
-        inlineCSS={'white-space:pre-wrap'}
-      >{alert}</Confirm>}
-      {post.productImageList && post.productImageList.length > 0 && (
-        <Swiper className="border-solid border-black border-b" css={css`
-            @media (min-width: ${mobileWidth}px) {
-                border-width:1px;
-            }
-        `}>
-            {post.productImageList.map((image, index) => <SwiperSlide key={image.productImageType+index} className="relative aspect-square">
-              <Image
-                  src={image.productImagePath}
-                  fill={true}
-                  alt={post.productName}
-                  priority={true}
-                  className="w-full h-full top-0 left-0 absolute object-cover"
-              />
-
-            </SwiperSlide>)}
-        </Swiper>
-      )}
-      <Container className='pt-10'>
-        {post.icons && <div className="mb-4">
-          {post.icons.filter(icon => icon.useYn === 'Y').map((icon) => (
-            <Badge key={icon.iconTypeDesc} type={icon.iconTypeDesc} />
-          ))}
-        </div>}
-        <h1 className="pb-2 font-extrabold" css={css`
-          font-size:3.4rem;
-        `}>{post.productName}</h1>
-        <p className="pb-6 font-bold">{post.productSummaryDesc}</p>
-        <div className="pb-4 border-b border-solid border-gray-300">
-          {post.productNetPrice !== post.productSalePrice && (
-            <span className='block'>
-              <small className='line-through text-gray-400'>{price(post.productNetPrice)}</small>{" "}
-              {post.productDiscountRate > 0 && (
-                <strong className="fcg">{post.productDiscountRate}%</strong>
-              )}
-            </span>
-          )}
-          <b>{price(post.productSalePrice)}</b>
-        </div>
-        <ul className="grid gap-1 py-4 mb-4" css={css`
-          li {
-            display:grid;
-            grid-template-columns: 100px 1fr;font-size:1.86rem;
-          }
-          label {color:var(--grayColor);}
-        `}>
-          <li>
-            <label>배송방법</label> {post.productShippingMethodType}
-          </li>
-          <li>
-            <label>배송비</label>
-            {post.productShippingPayType === "무료배송" ||
-            post.productShippingPrice === 0 ? (
-              <b>무료배송</b>
-            ) : (
-              <div>
-                {post.productShippingChargeType === "개별배송" && (
-                  <small css={css`
-                    color:var(--grayColor);font-size:1.7rem;
-                  `}>1개 주문시{" "}</small>
-                )}
-                {price(post.productShippingPrice)}
-              </div>
-            )}
-          </li>
-        </ul>
-        <InCart post={post} setAlert={setAlert} />
-       </Container>
-       <Container>
-        <div
-          css={productDetailCSS}
-          dangerouslySetInnerHTML={{ __html: post.productDetailDescHtml }}
-        ></div>
-        <dl css={guideCSS}>
-          <dt>결제방법</dt>
-          <dd
-            dangerouslySetInnerHTML={{
-              __html: post.productPaymentInfoHtml,
-            }}
-          ></dd>
-          <dt>배송안내</dt>
-          <dd
-            dangerouslySetInnerHTML={{
-              __html: post.productShippingInfoHtml,
-            }}
-          ></dd>
-          <dt>환불규정</dt>
-          <dd
-            dangerouslySetInnerHTML={{
-              __html: post.productExchangeInfoHtml,
-            }}
-          ></dd>
-        </dl>
-
-       </Container>
-      {post.tagList && (
-        <TagRecipeList tagIds={post.tagList
-            .map((tag:any) => {
-              return Number(tag.ihiId);
-            })
-            .join(",")}
-        />
-      )}
-    </main>
+    <Container>
+      <div
+        css={productDetailCSS}
+        dangerouslySetInnerHTML={{ __html: productDetailDescHtml }}
+      ></div>
+    </Container>
   )
-}
-
-export interface ProductOptionGroupType {
-  "optionGroupId": string,
-  "optionGroupType": string,
-  "optionGroupName": string,
-  "optionTemplateId": number,
-  "children": ProductOptionGroupType[]
-}
-export interface OptionItemType {
-  "ponId": string,
-  "itemId": string,
-  "optionName": string,
-  "addPrice": number,
-  "salePrice": number,
-  "soldOutYn": string,
-  "optionQty": number,
-  "optionSupplyUnit": string,
-  "optionSupplyQty": number,
-  "optionProvideCnt": number,
-  "optionGroupTemplatePath": string,
-  "optionGroupCaptionPath": string,
-  "orderableCount": number
-}
-export type ProductResponseType = {
-  "productId": string,
-  "productName": string,
-  "productGubun": string,
-  "productNetPrice": number,
-  "productSalePrice": number,
-  "productDiscountRate": number,
-  "productSaleStatus": string,
-  "productOrderLimitCount": number,
-  "productCartLimitCount": number,
-  "optionUseYn": string,
-  "orderLimitTime": string,
-  "productShippingType": string,
-  "productShippingMethodType": string,
-  "productShippingChargeType": string,
-  "productShippingPayType": string,
-  "productShippingPrice": number,
-  "productWeight": number,
-  "productSummaryDesc": string,
-  "productDetailDescHtml": string,
-  "productPaymentInfoHtml": string,
-  "productShippingInfoHtml": string,
-  "productExchangeInfoHtml": string,
-  "icons"?: {
-          "iconType": string,
-          "iconTypeDesc": string,
-          "useYn": string
-      }[],
-  "productComponents": [],
-  "optionGroups"?: ProductOptionGroupType[],
-  "options":  OptionItemType[],
-  "productImageList": 
-  {
-      "productImageType": string,
-      "productImagePath": string,
-      "productImageFullPath": string,
-      "imageDesc"?: string
-  }[],
-  "tagList"?: 
-  {
-      "ihiId": string,
-      "ihiHashtagName": string
-  }[],
-  "enableSubscriptionOrderYn": string,
-  "categories": {
-      "categoryFullPath": string,
-      "items": {
-          "categoryId": number,
-          "categoryName": string
-      }[]
-  }[],
-  "soldOutYn": string,
-  "orderableCount": number,
-  "whId": number
 }
 
 const productDetailCSS = css`
@@ -347,13 +149,13 @@ sub {
   width: 11rem;
   max-width: calc(100% - 5rem);
 }
-.brand_vision li:nth-child(1):before {
+.brand_vision li:nth-of-type(1):before {
   background-image: url("/images/yes2020_1.webp");
 }
-.brand_vision li:nth-child(2):before {
+.brand_vision li:nth-of-type(2):before {
   background-image: url("/images/yes2020_2.webp");
 }
-.brand_vision li:nth-child(3):before {
+.brand_vision li:nth-of-type(3):before {
   background-image: url("/images/yes2020_3.webp");
 }
 .brand_vision li {
@@ -632,54 +434,4 @@ sub {
   }
 }
 
-`
-const guideCSS = css`
-dt {
-  font-weight: 900;
-  font-size: 2.47rem;
-  padding-bottom: 1rem;
-  margin-bottom: 2rem;
-  line-height: 1.3;
-  border-bottom: 1px solid #000;
-  text-align: left;
-}
-dd {
-  color: #5b5b5b;
-  line-height: 1.3;
-  > strong,
-  .contents > strong {
-    font-weight: 900;
-    color: #555;
-    display: block;
-    font-size: 2.16rem;
-    line-height: 1.3;
-  }
-  .contents > strong + dl dt {
-    margin-top: 1rem;
-  }
-  dl {
-    margin: 0 0 2.3rem;
-  }
-  dd {
-    position: relative;
-    padding: 0.9rem 0 0 2rem;
-    font-size: 2rem;
-  }
-  dd:before {
-    content: "-";
-    position: absolute;
-    top: 0.9rem;
-    left: 0.38rem;
-  }
-  sub {
-    background: rgba(0, 0, 0, 0.1);
-    color: #555;
-    font-size: 1.87rem;
-    position: relative;
-    left: 2.4rem;
-  }
-}
-dd + dt {
-  margin-top: var(--defaultSpace);
-}
 `

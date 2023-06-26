@@ -50,6 +50,9 @@ export default function SubMenu({
                 }`:`
                 border-color:var(--lightGrayColor);
                 padding:1.54rem 0;
+                @media (min-width: ${mobileWidth}px) {
+                    position:absolute;left:100%;white-space:nowrap;top:-1px;
+                }
             `}
             `}>
                 {submenus && submenus.map((menu) => (

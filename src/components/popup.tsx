@@ -18,7 +18,7 @@ export default function PopupContainer({
     if(!guide.current) return;
       setTimeout(() => {
         setTop(
-          guide.current && window.innerHeight > guide.current.clientHeight
+          guide.current && typeof window && window.innerHeight > guide.current.clientHeight
             ? (window.innerHeight - guide.current.clientHeight) / 2
             : 0
         );

@@ -1,8 +1,7 @@
 /** @jsxImportSource @emotion/react */
 import { css } from '@emotion/react';
-import Confirm from '@/components/confirm'
 import { Api, ApiResponseType } from '@/util/api'
-import { useCallback, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import { OptionItemType, ProductResponseType } from './detail'
 import { price } from '@/util/price';
@@ -48,7 +47,6 @@ export default function InCart({
         {
             onMutate: (variables) => {
                 // A mutation is about to happen!
-                console.log(variables)
             },
             onSuccess: (data, variables) => {
                 if (data?.meta?.resultMsg) {
@@ -169,6 +167,7 @@ export default function InCart({
     useEffect(() => {
         if(!showCart || post.optionUseYn === 'Y') return;
         addCart()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     },[])
     if(post.optionUseYn === 'N' && showCart) return <></>
     return (

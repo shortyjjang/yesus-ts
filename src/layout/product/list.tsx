@@ -1,7 +1,6 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from "@emotion/react"
-import { Api } from '@/util/api'
 import { useState } from 'react'
 import { useQuery } from 'react-query'
 import Confirm from '@/components/confirm'

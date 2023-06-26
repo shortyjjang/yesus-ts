@@ -1,16 +1,18 @@
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react"
 import { Api, ApiResponseType } from '@/util/api';
 import Cookies from 'js-cookie';
-import React, { use } from 'react'
 import { useMutation, useQuery } from 'react-query';
 import PostProductItem from './product';
 import { bbsInfoType } from '@/atom/board';
 import PostHeader from './header';
 import Button from '@/components/button';
 import { useRouter } from 'next/router';
-import { bbsName } from '..';
+import { bbsName } from '@/layout/board';
 import { userInfo } from '@/atom/user';
 import { useRecoilValue } from 'recoil';
 import CommentIndex from './comment';
+import { mobileWidth } from '@/layout/header';
 
 export default function Post({
     articleId,
@@ -24,8 +26,9 @@ export default function Post({
     thisBBSInfo: bbsInfoType
 }) {
   const router = useRouter()
+  const { id } = router.query
   const user = useRecoilValue(userInfo)
-  const {data:post} = useQuery(['bbsDetail', articleId], async () => {
+  const {data:post, refetch} = useQuery(['bbsDetail', articleId], async () => {
       const request:ApiResponseType = await Api.get(
         `/api/board/v1/${bbsId}/${articleId}`,
         {
@@ -73,22 +76,20 @@ export default function Post({
           productName={post.productName} 
           productImage={post.productImage} 
           optionName={post.optionName}
+          className={thisBBSInfo.markType === 'ACCORDION' ? 'border-t-0 bg-white border-b pl-9':''}
         />
       }
-      {thisBBSInfo.markType !== 'ACCORDION' && 
+      {(thisBBSInfo.markType !== 'ACCORDION' || id) && 
         <PostHeader 
-          title={post.title} 
-          voteCount={post.voteCount} score={post.score} 
-          createTime={post.createTime} 
-          viewCount={post.viewCount} isVoted={post.isVoted} 
-          createBy={post.createBy}
+          {...post}
           setAlert={setAlert}
           articleId={post.id}
           bbsId={bbsId}
+          thisBBSInfo={thisBBSInfo}
         />
       }
-      <div className="whitespace-pre-wrap">{post.contents}</div>
-      <div className='whitespace-nowrap overflow-hidden'>
+      <div className='bg-white p-12' dangerouslySetInnerHTML={{__html: post.contents.replaceAll('\n','<br />')}}></div>
+      <div className='whitespace-nowrap overflow-auto bg-white'>
         {post.fileList && post.fileList.length > 0 && post.fileList.filter(file => file.answerFileYn === "N").map((file) => (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -96,14 +97,19 @@ export default function Post({
               key={file.path}
               max-width="100%"
               alt={file.name}
+              css={css`
+                @media (min-width: ${mobileWidth}px) {
+                  max-width: 400px;
+                }
+              `}
             />
           )
         )}
       </div>
-      {post.questionStatus === "Y" && thisBBSInfo.replyUseYn === "Y" && post.replyContents && (
-        <div>
-          <div>안녕하세요 예스어스입니다.</div>
-          <div dangerouslySetInnerHTML={{__html: post.replyContents}}></div>
+      {post.questionStatus === "Y" && post.replyContents && (
+        <div className="border-t border-solid border-gray-200">
+          <div className="font-bold px-12 pt-12 pb-4">A 안녕하세요 예스어스입니다.</div>
+          <div className="pr-12 pb-12 pl-20" dangerouslySetInnerHTML={{__html: post.replyContents}}></div>
           <div className='whitespace-nowrap overflow-hidden'>
             {post.fileList && post.fileList.length > 0 && post.fileList.filter(file => file.answerFileYn === "Y").map((file) => (
                 // eslint-disable-next-line @next/next/no-img-element
@@ -118,19 +124,32 @@ export default function Post({
           </div>
         </div>
       )}
-      {post.isEditable && (
-        <div>
-          <Button onClick={() => router.push(`/${bbsName(thisBBSInfo.id)}/edit/${post.id}`)}>수정하기</Button>
-          <Button onClick={() => deletePost.mutate({
-            articleId: post.id,
-            customerMallCd: "YESUS",
-            customerUid: user.username,
-            managementId: thisBBSInfo.id
-          })}>삭제하기</Button>
-        </div>
-      )}
+      <div className={`flex flex-row-reverse justify-between border-solid ${thisBBSInfo.markType !== 'ACCORDION' ? 'border-t pt-8' : `border-b ${post.isEditable && 'bg-white pb-8'}`}`} css={css`
+        border-color:var(--lightGrayColor);
+      `}>
+        {thisBBSInfo.markType !== 'ACCORDION' &&<Button size="sm"
+          onClick={() => router.push(`/${bbsName(thisBBSInfo.id)}`)}
+        >목록으로</Button>}
+        {post.isEditable && (
+          <div className="flex gap-4">
+            <Button size="sm"
+              onClick={() => router.push(`/${bbsName(thisBBSInfo.id)}/edit/${post.id}`)}
+              styleType="dimmend"
+            >수정하기</Button>
+            <Button size="sm"
+              onClick={() => deletePost.mutate({
+                articleId: post.id,
+                customerMallCd: "YESUS",
+                customerUid: user.username,
+                managementId: thisBBSInfo.id
+              })}
+              styleType="dimmend"
+            >삭제하기</Button>
+          </div>
+        )}
+      </div>
       {thisBBSInfo.commentUseYn === "Y" && post.commentList && (
-        <CommentIndex commentList={post.commentList} setAlert={setAlert} loop={thisBBSInfo.replyCommentUseYn === 'Y'} articleId={post.id} bbsId={thisBBSInfo.id} />
+        <CommentIndex refetch={refetch} commentList={post.commentList} setAlert={setAlert} loop={thisBBSInfo.replyCommentUseYn === 'Y'} articleId={post.id} bbsId={thisBBSInfo.id} />
       )}
     </div>
   )

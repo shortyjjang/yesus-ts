@@ -51,8 +51,6 @@ Api.interceptors.response.use(
   },
 
   async (error) => {
-    console.log(error);
-    console.log(error.response);
     if (
       (error.response.data &&
         error.response.data.meta &&
@@ -75,8 +73,8 @@ Api.interceptors.response.use(
       Cookies.remove("accessToken");
       return {
         meta: {
-          resultMsg: error.response.data.meta.resultMsg
-            ? error.response.data.meta.resultMsg
+          resultMsg: error.response.data?.meta?.resultMsg
+            ? error.response.data?.meta?.resultMsg
             : "잘못된 요청입니다",
         },
       };

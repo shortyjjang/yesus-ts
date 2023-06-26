@@ -29,7 +29,7 @@ export default function Confirm({
         font-size:2.16rem;max-width:90vw;min-width:200px;
         ${inlineCSS}
       `}>
-        <div className="w-18 aspect-square float-right"></div>
+        <div className="w-20 aspect-square float-right"></div>
         {children}
       </div>
       

@@ -20,7 +20,7 @@ export default function UserMenu() {
             const request = await getaccessToken()
             setUser(request)
         }
-        if (Cookies.get('access_token') && !user.username) {
+        if (Cookies.get('accessToken') && !user.username) {
             getToken()
         }
     },[setUser, user.username])
@@ -45,7 +45,7 @@ export default function UserMenu() {
                 margin-right:-2.5rem;
             }
         `}>
-            {(user.username || Cookies.get('access_token'))
+            {(user.username || Cookies.get('accessToken'))
             ? <ul className="flex items-center">
                 <li css={css`
                     @media (max-width: ${mobileWidth}px) {

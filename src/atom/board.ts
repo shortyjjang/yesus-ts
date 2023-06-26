@@ -14,7 +14,7 @@ type bbsListType = {
     startDate: string,
     title: string
 }
-export type bbsInfoType = {
+export interface bbsInfoType {
     categoryList: {
         id: number,
         name: string

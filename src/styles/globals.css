@@ -67,6 +67,7 @@ input, button, textarea, select {
     font-family: 'Noto Sans KR', sans-serif;
     font-size: 2rem;
     appearance: none;
+    outline: none;
 }
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {

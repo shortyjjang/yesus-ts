@@ -76,7 +76,6 @@ export default function NaverBtn({
     {
         onMutate: (variables) => {
             // A mutation is about to happen!
-            console.log(variables)
         },
         onSuccess: (data, variables) => {
             if (data?.meta?.resultMsg) {
@@ -125,7 +124,6 @@ export default function NaverBtn({
       {
           onMutate: (variables) => {
               // A mutation is about to happen!
-              console.log(variables)
           },
           onSuccess: (data, variables) => {
               if (data?.meta?.resultMsg) {
@@ -143,7 +141,7 @@ export default function NaverBtn({
     createOrder.mutate(JSON.parse(localStorage.getItem("nPay") || "[]"))
   },[createOrder]);
   useEffect(() => {
-    setIsMobile(/Mobile/.test(navigator.userAgent));
+    typeof navigator && setIsMobile(/Mobile/.test(navigator.userAgent));
     const loadScript = (id: string, src:string, callback:() => void) => {
         return new Promise(resolve => {
             const script = document.createElement('script');

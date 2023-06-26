@@ -51,6 +51,7 @@ export default function Login() {
         }
       } = await AuthApi.post("/form-login", body);
       if(!response) return;
+      console.log(response)
       const { access_token, username, nickname, message } = response.data;
       if (message) {
         setAlert(message);
@@ -61,7 +62,7 @@ export default function Login() {
           nickname: nickname ? nickname : '',
           expires: dayjs().add(30, 'minute').toDate(),
         })
-        Cookies.set('access_token', access_token, { expires: 1/48.2 });
+        Cookies.set('accessToken', access_token, { expires: 1/48.2 });
         router.push('/')
       }
     } catch (e: any) {

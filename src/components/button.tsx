@@ -72,7 +72,7 @@ export default function Button({
         ${sizeStyle(size)}
         ${btnStyle(styleType)}
         ${inlineCSS}
-    `}>
+    `} type={type}>
         {children}
     </button>
   )

@@ -124,16 +124,41 @@ export default function Navigation({
             </nav>
             {open && <nav className="left-0 w-full border-t border-solid border-black" css={css`
                 position:fixed;top:${headerH}px;height:calc(100% - ${headerH}px);background:var(--backgroundColor);color:#525252;
-                @media (min-width: ${mobileWidth}px) {
-                    position:absolute;width:auto;top:100%;
-                }
+      
                 li {
                     > a, > span {height:6.5rem;padding:0 var(--defaultSpace);display:flex;align-items:center;}
                     + li {border-top:var(--lightGrayColor) 1px solid;}
                 }
+                @media (min-width: ${mobileWidth}px) {
+                    position:absolute;width:auto;top:100%;height:auto;border: 1px solid var(--lightGrayColor);border-top-color:var(--defaultColor);
+                    background:var(--backgroundColor);color:#525252;
+                    li {
+                        > a, > span {
+                            height:5rem;font-size:1.85rem;
+                            &:after {transform:rotate(-90deg) translate(50%, 50%)}
+                        }
+                        &:first-of-type > div {border-top-color:var(--defaultColor)}
+                        > div {
+                            display:none;padding:1.54rem 0;border:1px solid var(--lightGrayColor);
+                            a {
+                                font-size: 1.85rem;
+                                height: 4.375rem;
+                                &:hover {color:var(--defaultColor);text-decoration:underline;}
+                            }
+                        }
+                        &:hover {
+                            > a, > span {color:var(--greenColor);}
+                            > span {
+                                position:relative;z-index:1;
+                                &:before {position:absolute;left:100%;top:0;height:100%;width:1px;background:#fff;content:'';}
+                            }
+                            > div {display:block;}
+                        }
+                    }
+                }
             `}>
                 <ul>
-                    {menus.map((menu) => <li key={menu.title} css={css``}>
+                    {menus.map((menu) => <li key={menu.title} css={css``} className="relative">
                         {menu.children && (!menu.show || (menu.show && user.username)) 
                         ? <SubMenu type="sidebar"
                         parent={[

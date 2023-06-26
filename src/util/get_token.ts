@@ -9,13 +9,13 @@ export const getaccessToken = async () => {
       expires = dayjs().toDate();
     try {
       const request = await AuthApi.post("/token-refresh");
-      if (request.data.access_token) {
-        const { access_token } = request.data;
+      if (request.data.accessToken) {
+        const { accessToken } = request.data;
         username = request.data.username;
         nickname = request.data.nickname;
         expires = dayjs().add(29, "minute").toDate();
   
-        Cookies.set("accessToken", access_token, {
+        Cookies.set("accessToken", accessToken, {
           expires: 1 / 48.5,
         });
         return {

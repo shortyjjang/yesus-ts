@@ -8,23 +8,28 @@ export default function CommentIndex({
     loop,
     articleId,
     bbsId,
-    setAlert
+    setAlert,
+    refetch
 }:{
     commentList: commentType[]
     loop:boolean,
     articleId: string
     bbsId: number
     setAlert: (msg: string) => void
+    refetch: () => void
 }) {
     const user = useRecoilValue(userInfo)
     return (
-        <div>
+        <div  className={"mt-20"}>
             {!user.username || commentList.findIndex(comment => comment.createBy === user.username) < 0 && (
-                <AddComment articleId={articleId} bbsId={bbsId} setAlert={setAlert} />
+                <AddComment refetch={refetch} articleId={articleId} bbsId={bbsId} setAlert={setAlert} />
             )}
-            {commentList.map(comment => (
-                <CommentItem key={comment.id} {...comment} loop={loop} articleId={articleId} bbsId={bbsId} setAlert={setAlert}/>
-            ))}
+            {commentList.length > 0 && (<div className='border-b border-solid border-gray-300'>
+                {commentList.map(comment => (
+                    <CommentItem refetch={refetch} key={comment.id} {...comment} loop={loop} articleId={articleId} bbsId={bbsId} setAlert={setAlert}/>
+                ))}
+
+            </div>)}
         </div>
     )
 }

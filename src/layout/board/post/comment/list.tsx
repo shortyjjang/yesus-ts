@@ -1,6 +1,14 @@
+/** @jsxImportSource @emotion/react */
+import { css } from "@emotion/react"
 import dayjs from 'dayjs'
 import AddComment from './add'
 import { useState } from 'react'
+import Button from "@/components/button"
+import { useMutation } from "react-query"
+import { Api, ApiResponseType } from "@/util/api"
+import { userInfo } from "@/atom/user"
+import { useRecoilValue } from "recoil"
+import Cookies from "js-cookie"
 
 export default function CommentItem({
     id,
@@ -11,7 +19,8 @@ export default function CommentItem({
     loop,
     articleId,
     bbsId,
-    setAlert
+    setAlert,
+    refetch
 }:{
     id: number
     createBy: string
@@ -22,38 +31,76 @@ export default function CommentItem({
     articleId: string
     bbsId: number
     setAlert: (msg: string) => void
+    refetch: () => void
 }) {
     const [add, setAdd] = useState(false)
+    const [edit, setEdit] = useState(false)
+    const user = useRecoilValue(userInfo)
+    const removeComment = useMutation('removeComment',
+      async (id:number) => {
+          const request: ApiResponseType = await Api.post(
+            `/api/board/v1/comment/delete`,
+            {
+              customerMallCd: "YESUS",
+              customerUid: user.username,
+              id: id,
+            },
+            {
+              headers: { Authorization: Cookies.get("accessToken") },
+            }
+          );
+          return request
+      },
+      {
+          onSuccess: (data, variables) => {
+              if (data?.meta?.resultMsg) {
+                  setAlert(data.meta.resultMsg);
+                  return;
+              }
+              refetch()
+          },
+      }
+    )
     return (
-        <div key={id}>
-            <b>{createBy}</b>{" "}
-            <span className="date">{returnTime(createTime)}</span>
-            <div
-            className="dialog"
-            dangerouslySetInnerHTML={{
-                __html: contents.replaceAll("\n", "<br />"),
-            }}
-            ></div>
-            <div className="btns">
-            {loop && (
-                <button className="add" onClick={() => setAdd(!add)}>
-                댓글 남기기
-                </button>
-            )}
-            {isEditable && (
-                <>
-                <button
-                    className="edit"
-                    onClick={() => {}}
-                >
-                    수정
-                </button>
-                </>
-            )}
+        <div className="py-4 border-t border-solid border-gray-300">
+            <b css={css`font-size:2.16rem;`}>{createBy}</b>{" "}
+            <span css={css`font-size:1.7rem;color:var(--grayColor);`}>{returnTime(createTime)}</span>
+            {edit ?
+                <AddComment 
+                    contents={contents}
+                    closeComment={() => setEdit(false)}
+                    articleId={articleId} bbsId={bbsId} setAlert={setAlert} id={id}
+                    refetch={refetch}
+                />
+            :<>
+                <div
+                dangerouslySetInnerHTML={{
+                    __html: contents.replaceAll("\n", "<br />"),
+                }}
+                ></div>
+                <div className="flex justify-end gap-4">
+                    {loop && (
+                        <Button size="sm" styleType="dimmend" className="font-normal" inlineCSS="padding:0.75rem 2rem;" onClick={() => setAdd(!add)}>
+                        댓글 남기기
+                        </Button>
+                    )}
+                    {isEditable && (
+                        <>
+                        <Button onClick={() => removeComment.mutate(id)}
+                            size="sm" styleType="dimmend" className="font-normal" inlineCSS="padding:0.75rem 2rem;">
+                            삭제
+                        </Button>
+                        <Button onClick={() => setEdit(true)}
+                            size="sm" styleType="dimmend" className="font-normal" inlineCSS="padding:0.75rem 2rem;">
+                            수정
+                        </Button>
+                        </>
+                    )}
+                </div>
+            </>}
             {add && (
-                <AddComment articleId={articleId} bbsId={bbsId} setAlert={setAlert} id={id} />
+                <AddComment refetch={refetch} articleId={articleId} bbsId={bbsId} setAlert={setAlert} id={id} />
             )}
-            </div>
         </div>
     )
 }

@@ -82,7 +82,7 @@ export default function ProductList({
                 <Select value={sort} setValue={(e) => {
                     setSort(e.target.value)
                     replace('sort', e.target.value)
-                }} size="big" options={[
+                }} size="large" options={[
                     ['신상품순', 'NEW_ORDER'],
                     ['인기순', 'POPULAR_ORDER'],
                     ['낮은가격순', 'LOW_PRICE_ORDER'],

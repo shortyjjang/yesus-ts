@@ -77,7 +77,6 @@ const getCategories = async () => {
   const response:ResonseType = await axios.get(`${process.env.NEXT_PUBLIC_ATD_API_BASIC_PATH}/api/category/v1/display`).then(res => res.data);
   if(response.content && response.content.flatList && response.content.flatList.find((category:CategoryType) => category.categoryName === '단품')) {
     let all = response.content.hierarchyList.find((category:CategoryType) => category.categoryName === '단품')
-    console.log(all)
     if(all && all.children) return [
       all,
       ...all.children
