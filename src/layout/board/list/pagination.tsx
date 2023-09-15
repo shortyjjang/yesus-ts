@@ -1,4 +1,4 @@
-import Button from '@/components/button';
+import Button from '@/layout/button';
 import { useRouter } from 'next/router';
 
 export default function Pagination({

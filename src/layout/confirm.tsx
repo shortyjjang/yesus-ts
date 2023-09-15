@@ -1,6 +1,6 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react"
-import PopupContainer from "./popup";
+import PopupContainer from "../components/popup";
 import Button from "./button";
 
 export default function Confirm({
@@ -40,7 +40,7 @@ export default function Confirm({
         `}
       >
         {onSuccess && (<Button onClick={onSuccess}>{sucessTxt ? sucessTxt : "확인"}</Button>)}
-        <Button onClick={onClose}>{cancelTxt ? cancelTxt : "취소"}</Button>
+        <Button onClick={onClose}>{cancelTxt ? cancelTxt :(onSuccess ?  "취소": "확인")}</Button>
       </div>
       
     </PopupContainer>

@@ -61,11 +61,14 @@ export const menus = [
 ]
 
 export default function Navigation({
-    headerH
+    headerH,
+    open,
+    setOpen
 }:{
-    headerH: number
+    headerH: number,
+    open: boolean,
+    setOpen: (open: boolean) => void
 }) {
-    const [open, setOpen] = useState(false);
     const user = useRecoilValue(userInfo);
     const topMenu = [
         menus[0],
@@ -75,20 +78,20 @@ export default function Navigation({
         menus[6],
     ]
     return (
-        <Container className="relative" inlineCSS={`
-            padding-left:10.25rem;font-size:var(--defaultSpace);
-            @media (max-width: ${mobileWidth}px) {padding-left:8rem;padding-right:0;}
-        `}>
-            <button onClick={() => setOpen(!open)} className='w-28 h-28 absolute top-0 left-0 border-solid border-black border-0 flex items-center justify-center' css={css`
-                border-right-width:1px;
-                @media (min-width: 1020px) {
-                    border-width:0 1px;
-                }
-            `}><span className="h-10 w-14 border-solid border-t border-b border-black relative" css={css`
-                text-indent:-1000em;
-                &:before {content:'';position:absolute;top:50%;left:0;height:1px;width:100%;background:#000;}
-            `}>메뉴{open ? '접기':'펼쳐보기'}</span></button>
-            <nav>
+        <Container className="relative">
+            <nav css={css`
+                padding-left:10.25rem;font-size:var(--defaultSpace);
+                @media (max-width: ${mobileWidth}px) {padding-left:8rem;padding-right:0;}
+            `}>
+                <button onClick={() => setOpen(!open)} className='w-28 h-28 absolute top-0 left-0 border-solid border-black border-0 flex items-center justify-center' css={css`
+                    border-right-width:1px;
+                    @media (min-width: 1020px) {
+                        border-width:0 1px;
+                    }
+                `}><span className="h-10 w-12 border-solid border-t border-b border-black relative" css={css`
+                    text-indent:-1000em;
+                    &:before {content:'';position:absolute;top:50%;left:0;height:1px;width:100%;background:#000;margin-top:-1px;}
+                `}>메뉴{open ? '접기':'펼쳐보기'}</span></button>
                 <ul className="flex justify-center whitespace-nowrap" css={css`
                     li {
                         width:100%;position:relative;
@@ -113,17 +116,20 @@ export default function Navigation({
                             }
                         `}>
                             {menu.children && (!menu.show || (menu.show && user.username)) ? <SubMenu type="header"
+                            setOpen={setOpen}
                             parent={[
                                 menu.title,
                                 menu.link
                             ]} submenus={menu.children} />
-                            : <Link href={menu.link}>{menu.title}</Link>}
+                            : <Link href={menu.link} onClick={() => setOpen(false)}>{menu.title}</Link>}
                         </li>
                     ))}
                 </ul>
             </nav>
             {open && <nav className="left-0 w-full border-t border-solid border-black" css={css`
-                position:fixed;top:${headerH}px;height:calc(100% - ${headerH}px);background:var(--backgroundColor);color:#525252;
+                position:fixed;top:${headerH ? `${headerH}px` :'16rem'};
+                height:calc(100% - ${headerH ? `${headerH}px` :'16rem'});
+                background:var(--backgroundColor);color:#525252;
       
                 li {
                     > a, > span {height:6.5rem;padding:0 var(--defaultSpace);display:flex;align-items:center;}
@@ -164,8 +170,8 @@ export default function Navigation({
                         parent={[
                             menu.title,
                             menu.link
-                        ]} submenus={menu.children} />
-                        : <Link href={menu.link}>{menu.title}</Link>}
+                        ]} submenus={menu.children} setOpen={setOpen} />
+                        : <Link href={menu.link} onClick={() => setOpen(!open)}>{menu.title}</Link>}
                     </li>)}
                 </ul>
             </nav>}

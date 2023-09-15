@@ -6,13 +6,12 @@ import Link from "next/link"
 import Container from "@/layout/container"
 import UserMenu from "@/layout/header/usermenu"
 import Navigation from "@/layout/header/navigation"
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 export const mobileWidth = 750
 
 export default function Header() {
     const header = useRef<HTMLDivElement>(null);
-    useEffect(() => {
-    })
+    const [open, setOpen] = useState(false);
     return (
         <header ref={header} className="fixed top-0 left-0 w-full z-10 border-b border-solid border-black" css={css`
             background:var(--backgroundColor);
@@ -48,7 +47,7 @@ export default function Header() {
                 <UserMenu />
             </Container>
             <hr className="border-t border-black" />
-            <Navigation headerH={header?.current?.clientHeight || 0} />
+            <Navigation headerH={header?.current?.clientHeight || 0} open={open} setOpen={setOpen}/>
         </header>
     )
 }

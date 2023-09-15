@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { bbsInfo, bbsInfoType } from "@/atom/board"
-import Confirm from "@/components/confirm"
+import Confirm from "@/layout/confirm"
 import { Api, ApiResponseType } from "@/util/api"
 import { css } from "@emotion/react"
 import { useEffect, useState } from "react"
@@ -15,6 +15,7 @@ import PageTitle from "@/components/page_title"
 import AddPost from "./post/add"
 import EditPost from "./post/edit"
 import { userInfo } from "@/atom/user"
+import Auth from "../auth"
 
 
 export default function Board({ 
@@ -42,6 +43,8 @@ export default function Board({
         }
         const data: bbsInfoType = request.content
         setBoardInfo([...boardInfo, data])
+        if((data.writeRole !== 'NON' && !user.username && (type === 'edit' || type === 'write')) 
+        || (data.readRole !== 'NON' && !user.username && type === 'view'))router.back()
         return data
     })
     const bbsParam = {
@@ -51,7 +54,11 @@ export default function Board({
     }
     return (
         <Container className="pb-20">
-            {thisBBSInfo !== undefined && <>
+            {thisBBSInfo !== undefined && <Auth role={
+                (type === 'write' || type === 'edit') ? ((thisBBSInfo.writeRole === 'NON') ? 'NON': 'USER')
+                : (type === 'view') ? ((thisBBSInfo.readRole === 'NON') ? 'NON':'USER')
+                : ((thisBBSInfo.id === 3) ?'USER':'NON')
+            }>
                 {!(productId && type === 'list') &&<PageTitle title={thisBBSInfo.name} />}
                 {type === 'list' && 
                     <BoardList bbsId={bbsId} setAlert={setAlert} query={
@@ -67,15 +74,15 @@ export default function Board({
                     }:bbsParam} productId={productId} />
                 }
                 {type === 'view' && id &&
-                    <Post bbsId={bbsId} setAlert={setAlert} articleId={String(id)} thisBBSInfo={thisBBSInfo} />
+                    <Post bbsId={bbsId} articleId={String(id)} thisBBSInfo={thisBBSInfo} />
                 }
                 {type === 'write' &&
-                    <AddPost setAlert={setAlert} thisBBSInfo={thisBBSInfo} productId={String(router.query.productId)} />
+                    <AddPost thisBBSInfo={thisBBSInfo} productId={String(router.query.productId)} />
                 }
                 {type === 'edit' && id &&
-                    <EditPost setAlert={setAlert} articleId={String(id)} thisBBSInfo={thisBBSInfo} />
+                    <EditPost articleId={String(id)} thisBBSInfo={thisBBSInfo} />
                 }
-            </>}
+            </Auth>}
             {alert && <Confirm onClose={() => {
                 setAlert(null)
                 type === 'list' ? router.push('/')

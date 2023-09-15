@@ -2,7 +2,7 @@ import { bbsInfoType } from '@/atom/board'
 import AddForm, { BBSFormApiType } from './form'
 import Cookies from 'js-cookie'
 import { ReactNode, use, useState } from 'react'
-import Confirm from '@/components/confirm'
+import Confirm from '@/layout/confirm'
 import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { userInfo } from '@/atom/user'
@@ -12,14 +12,10 @@ import { bbsName } from '..'
 
 export default function AddPost({
     thisBBSInfo,
-    articleId,
-    setAlert,
     opId,
     productId,
 }:{
     thisBBSInfo: bbsInfoType
-    articleId?: string
-    setAlert: (msg: string) => void
     opId?: string
     productId?: string
 }) {
@@ -68,8 +64,7 @@ export default function AddPost({
       );
     }
   })
-  const addPost = async (data: any, files:File[]) => {
-    console.log(Cookies.get("accessToken"))
+  const addPost = async (data: any, files:File[], deleteBbsFileIds:number[]) => {
       if (
         thisBBSInfo.writeRole !== "NON" &&
         !Cookies.get("accessToken")
@@ -138,7 +133,7 @@ export default function AddPost({
         body = {
           ...body,
           managementParentId: thisBBSInfo.id,
-          parentId: String(router.query.id),
+          parentId: Number(router.query.id),
         };
       }
       //게시판에서 비밀글을 허용할때
@@ -237,9 +232,9 @@ export default function AddPost({
           </Confirm>
         );
       }
-    };
+  };
   return (<>
-  <AddForm thisBBSInfo={thisBBSInfo} articleId={articleId} setAlert={setAlert} opId={opId} saveData={addPost} productId={productId} />
+  <AddForm thisBBSInfo={thisBBSInfo} setAlert={setShowAlert} opId={opId} saveData={addPost} productId={productId} />
   {alert && alert}
   </>
     )

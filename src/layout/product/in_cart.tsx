@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import { useMutation } from 'react-query'
 import { OptionItemType, ProductResponseType } from './detail'
 import { price } from '@/util/price';
-import Button from '@/components/button';
-import { useRecoilState, useRecoilValue, useSetRecoilState } from 'recoil';
+import Button from '@/layout/button';
+import { useRecoilState, useRecoilValue } from 'recoil';
 import { CartOptionType, CartType, cartList } from '@/atom/cart';
 import { userInfo } from '@/atom/user';
 import { AxiosError } from 'axios';
@@ -31,7 +31,7 @@ export default function InCart({
 }) {
     const user = useRecoilValue(userInfo)
     const [cart, setCart] = useRecoilState(cartList);
-    const setOrder = useSetRecoilState(orderList);
+    const [order, setOrder] = useRecoilState(orderList);
     const router = useRouter();
     const [optionStatus, setOptionStatus] = useState<string[]>(() => post.optionGroups ? post.optionGroups.map(intial => ''):[])
     const [selectedOptions, setSelectedOptions] = useState<OptionsType[]>([])

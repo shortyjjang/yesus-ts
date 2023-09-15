@@ -32,7 +32,7 @@ const Accordion = ({
                     `}></div>
                     <ListItem {...item} thisBBSInfo={thisBBSInfo} />
                 </div>
-                {open && <Post articleId={item.articleId} setAlert={setAlert} bbsId={thisBBSInfo.id} thisBBSInfo={thisBBSInfo} />}
+                {open && <Post articleId={item.articleId} bbsId={thisBBSInfo.id} thisBBSInfo={thisBBSInfo} />}
             </div>
         </>
     )

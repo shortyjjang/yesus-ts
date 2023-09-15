@@ -8,6 +8,6 @@ export type OrderType = {
     payType?: string,
 }
 export const orderList = atom<OrderType[]>({
-    key: 'orderList',
+    key: 'order_list',
     default: [],
 })

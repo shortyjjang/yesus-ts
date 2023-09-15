@@ -43,7 +43,9 @@ const ListItem = ({
             `}>
                 {thisBBSInfo.secretUseYn === 'Y' && secretYn === "Y" && <span>비밀글</span>}
                 {title}
-                {newPostYn === "Y" && <span>NEW</span>}
+                {newPostYn === "Y" && <span className="inline-block align-middle font-bold bcy uppercase px-2 pt-1 -mt-1 ml-2" css={css`
+                    font-size:0.9rem;
+                `}>NEW</span>}
             </div>
             <div className="flex gap-4" css={css`
                 color:var(--grayColor);
@@ -68,7 +70,17 @@ const ListItem = ({
                     {score === 5 && '★★★★★'}
                 </div>}
             </div>
-            {thisBBSInfo.listContentsMarkUseYn === "Y" && contents && <div>{contents}</div>}
+            {thisBBSInfo.listContentsMarkUseYn === "Y" && contents && <div className="block line-clamp-2 text-ellipsis pt-2" css={css`
+                font-size: 1.86rem;
+                color: var(--grayColor);
+                line-height: 1.4em;
+                max-height: 2.8em;
+                * {display:inline;}
+            ${(
+                (thisBBSInfo.fileUploadUseYn === 'Y' && thisBBSInfo.markType === 'GALLARY' && thumbnailImage) 
+                || 
+                (thisBBSInfo.useProductYn === 'Y' && productImage)
+            ) ? 'grid-column:1/3':''}`} dangerouslySetInnerHTML={{__html:contents}}></div>}
         </>
     )
 }

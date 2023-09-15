@@ -3,7 +3,7 @@
 import { css } from "@emotion/react"
 import { useState } from 'react'
 import { useQuery } from 'react-query'
-import Confirm from '@/components/confirm'
+import Confirm from '@/layout/confirm'
 import { useRouter } from 'next/navigation'
 import Container from "../container"
 import ItemCard from "./card"

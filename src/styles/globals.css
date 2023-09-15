@@ -1,6 +1,8 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@100;300;400;500;700;900&display=swap");
+
 
 :after,:before,:root {
     --pointColor: #ffd900;
@@ -59,6 +61,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     font-size: 2rem;
+    word-break: keep-all;
 }
 legend, caption {
     display: none;

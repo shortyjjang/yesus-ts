@@ -2,9 +2,10 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from "@emotion/react"
-import Button from "@/components/button";
+import Button from "@/layout/button";
 import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
+import Auth from "@/layout/auth";
 
 export default function Custom404() {
   const [isLoading, endLoading] = useState(false);
@@ -61,22 +62,24 @@ export default function Custom404() {
   }, [router]);
   if(!isLoading) return (<></>)
   return (
-        <div className="flex text-center items-center justify-center flex-col" css={css`
-            height:calc(100svh - 15.4rem);
-        `}>
-          <span className="font-extrabold" css={css`font-size:15.4rem;`}>
-            4<em className="inline-block align-middle w-[13.4rem] h-[12.8rem] relative" css={css`
-                background: url("/images/yesus_404.gif") no-repeat 50% 50%;
-                background-size: contain;
-                margin: -3rem -2rem 0 -1.5rem;text-indent:-1000em;
-            `}>0</em>4
-          </span>
-          <strong css={css`font-size:var(--defaultSpace);`}>Oops, Page not found!</strong>
-          <div className="mt-14">
-            <Button onClick={() => router.back()}>
-                이전페이지로 가기
-            </Button>
-          </div>
+    <Auth role="NON">
+      <div className="flex text-center items-center justify-center flex-col" css={css`
+          height:calc(100svh - 15.4rem);
+      `}>
+        <span className="font-extrabold" css={css`font-size:15.4rem;`}>
+          4<em className="inline-block align-middle w-[13.4rem] h-[12.8rem] relative" css={css`
+              background: url("/images/yesus_404.gif") no-repeat 50% 50%;
+              background-size: contain;
+              margin: -3rem -2rem 0 -1.5rem;text-indent:-1000em;
+          `}>0</em>4
+        </span>
+        <strong css={css`font-size:var(--defaultSpace);`}>Oops, Page not found!</strong>
+        <div className="mt-14">
+          <Button onClick={() => router.back()}>
+              이전페이지로 가기
+          </Button>
         </div>
+      </div>
+    </Auth>
   );
 }

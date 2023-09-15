@@ -1,3 +1,4 @@
+import Auth from "@/layout/auth";
 import axios from "axios";
 import { useState } from "react";
 import { useQuery } from "react-query";
@@ -12,14 +13,14 @@ export default function Home() {
   if(category.isLoading) return <></>
   if(category.isError) return <></>
   if(categoryId) return (
-    <main>
+    <Auth role="NON">
       {category.data && <>
         {category.data.map(category => <div key={category?.categoryId} onClick={() => setCategoryId(category?.categoryId)}>
           {category?.categoryName}
         </div>)}{categoryId}
         {category.data[0]?.categoryId > 0 && <ProductList category={categoryId} />}
       </>}
-    </main>
+    </Auth>
   )
 }
 

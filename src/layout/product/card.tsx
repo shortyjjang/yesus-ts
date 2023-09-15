@@ -11,7 +11,7 @@ import { useMutation } from "react-query"
 import { Api, ApiResponseType } from "@/util/api"
 import { ProductResponseType } from "./detail"
 import Container from "../container"
-import Confirm from "@/components/confirm"
+import Confirm from "@/layout/confirm"
 import { useRouter } from "next/router"
 
 export type ItemCardType = {

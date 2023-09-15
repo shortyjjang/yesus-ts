@@ -1,24 +1,37 @@
 /** @jsxImportSource @emotion/react */
 
+import { userInfo } from "@/atom/user";
 import { mobileWidth } from "@/layout/header";
 import { css } from "@emotion/react"
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useState } from "react";
+import { useRecoilValue } from "recoil";
 
 export default function SubMenu({
     submenus,
     parent,
-    type
+    type,
+    setOpen
 }:{
     type: string,
     submenus?: string[][],
     parent: string[]
+    setOpen?: (open: boolean) => void
 })  {
     const [toggle, setToggle] = useState(type === 'header' ? false : true);
+    const user = useRecoilValue(userInfo)
+    const router = useRouter()
     return(
         <>
-            {type === 'header' && <Link href={parent[1]} css={css`@media (max-width: ${mobileWidth}px) {display:none !important;}`}>{parent[0]}</Link>}
+            {type === 'header' && <Link href={parent[1]} css={css`
+                ${((submenus && submenus?.findIndex((path) => path[1] === router.pathname) > -1)
+                || parent[1] === router.pathname) ? 'color:var(--greenColor);':'' }
+                @media (max-width: ${mobileWidth}px) {display:none !important;}
+            `}>{parent[0]}</Link>}
             <span className="w-full cursor-pointer" onClick={() => setToggle(!toggle)} css={css`
+                ${((submenus && submenus?.findIndex((path) => path[1] === router.pathname) > -1)
+                    || parent[1] === router.pathname) ? 'color:var(--greenColor);':'' }
                 ${type === 'header' ? `@media (min-width: ${mobileWidth}px) {display:none !important;}`:`
                     position:relative;
                     &:after {
@@ -56,18 +69,31 @@ export default function SubMenu({
             `}
             `}>
                 {submenus && submenus.map((menu) => (
-                    <Link className={`flex items-center ${type === 'header' ? "justify-center h-20":"w-full"}`} href={menu[1]} key={menu[0]} css={css`
-                        padding:0 var(--defaultSpace);
-                        ${type === 'header' ? `
-                        color:var(--grayColor);
-                        @media (min-width: ${mobileWidth}px) {
-                            font-size:1.85rem;height:4.25rem;
-                            &:hover {color:var(--greenColor)}
-                        }`
-                        :`
-                        font-size:2.31rem;height:5.5rem;
+                    menu[0] === '나만의 레시피' && !user.username ?
+                    <></>:<Link 
+                        className={`flex items-center ${type === 'header' ? "justify-center h-20":"w-full"}`} 
+                        onClick={() => setOpen && setOpen(false)}
+                        href={menu[1]} key={menu[0]} css={css`
+                            padding:0 var(--defaultSpace);
+                            ${type === 'header' ? `
+                                color:var(--grayColor);
+                                @media (min-width: ${mobileWidth}px) {
+                                    font-size:1.85rem;height:4.25rem;
+                                    &:hover {
+                                        color:var(--defaultColor);
+                                        text-decoration:underline;
+                                    }
+                                }
+                                `
+                            :`
+                                font-size:2.31rem;height:5.5rem;
+                            `}
+                            ${menu[1] === router.pathname ?`
+                                color:var(--defaultColor);
+                                text-decoration:underline;
+                            `:''}
                         `}
-                    `}>{menu[0]}</Link>
+                    >{menu[0]}</Link>
                 ))}
             </div>
         </>

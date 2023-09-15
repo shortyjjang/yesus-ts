@@ -1,14 +1,15 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react"
 import dayjs from 'dayjs'
-import AddComment from './add'
+import AddComment, { returnTime } from './add'
 import { useState } from 'react'
-import Button from "@/components/button"
+import Button from "@/layout/button"
 import { useMutation } from "react-query"
 import { Api, ApiResponseType } from "@/util/api"
 import { userInfo } from "@/atom/user"
 import { useRecoilValue } from "recoil"
 import Cookies from "js-cookie"
+import { set } from "react-hook-form"
 
 export default function CommentItem({
     id,
@@ -20,7 +21,8 @@ export default function CommentItem({
     articleId,
     bbsId,
     setAlert,
-    refetch
+    refetch,
+    save
 }:{
     id: number
     createBy: string
@@ -32,6 +34,7 @@ export default function CommentItem({
     bbsId: number
     setAlert: (msg: string) => void
     refetch: () => void
+    save: (data: any, parentId?:any) => void
 }) {
     const [add, setAdd] = useState(false)
     const [edit, setEdit] = useState(false)
@@ -69,8 +72,11 @@ export default function CommentItem({
                 <AddComment 
                     contents={contents}
                     closeComment={() => setEdit(false)}
-                    articleId={articleId} bbsId={bbsId} setAlert={setAlert} id={id}
+                    setAlert={setAlert}
                     refetch={refetch}
+                    save={({comment}) => {
+                        save(comment)
+                    }}
                 />
             :<>
                 <div
@@ -99,23 +105,13 @@ export default function CommentItem({
                 </div>
             </>}
             {add && (
-                <AddComment refetch={refetch} articleId={articleId} bbsId={bbsId} setAlert={setAlert} id={id} />
+                <AddComment save={({comment}) => {
+                    setAdd(false)
+                    save(comment, id)}
+                } 
+                closeComment={() => setAdd(false)}
+                refetch={refetch} setAlert={setAlert} />
             )}
         </div>
     )
 }
-
-const returnTime = (time:string) => {
-    const now = dayjs();
-    const updated = dayjs(time);
-    if (now.diff(updated, "years") > 0)
-      return `${dayjs(time).format("YYYY-MM-DD")}`;
-    else if (now.diff(updated, "months") > 0)
-      return `${now.diff(updated, "months")}달전`;
-    else if (now.diff(updated, "days") > 0)
-      return `${now.diff(updated, "days")}일전`;
-    else if (now.diff(updated, "hours") > 0)
-      return `${now.diff(updated, "hours")}시간전`;
-    else if (now.diff(updated, "minutes") < 10) return `방금전`;
-    else return `${String(now.diff(updated, "minutes")).substring(0, 1)}0분전`;
-};

@@ -1,7 +1,7 @@
 /** @jsxImportSource @emotion/react */
 
 import { css } from "@emotion/react"
-import Button from '@/components/button'
+import Button from '@/layout/button'
 import Image from 'next/image'
 import { useState } from 'react'
 import { useQuery } from 'react-query'

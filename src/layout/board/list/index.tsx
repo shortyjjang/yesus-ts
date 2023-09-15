@@ -16,7 +16,7 @@ import { useRouter } from "next/router"
 import SearchBoard from "./search"
 import dayjs from "dayjs"
 import Pagination from "./pagination"
-import Button from "@/components/button"
+import Button from "@/layout/button"
 
 export default function BoardList({ 
     bbsId,

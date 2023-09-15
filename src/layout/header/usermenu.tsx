@@ -10,6 +10,7 @@ import { mobileWidth } from "@/layout/header";
 import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { getaccessToken } from "@/util/get_token";
+import dayjs from "dayjs";
 
 
 export default function UserMenu() {
@@ -18,7 +19,10 @@ export default function UserMenu() {
     useEffect(() => {
         const getToken = async () => {
             const request = await getaccessToken()
-            setUser(request)
+            setUser({
+                ...request,
+                expires: dayjs(request.expires).toDate()
+            })
         }
         if (Cookies.get('accessToken') && !user.username) {
             getToken()

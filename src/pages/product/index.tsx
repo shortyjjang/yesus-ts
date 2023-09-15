@@ -12,6 +12,7 @@ import { useQuery } from "react-query";
 import Select from "@/components/input/select";
 import { useRouter } from "next/router";
 import Head from "next/head";
+import Auth from "@/layout/auth";
 
 export default function ProductList({
     category
@@ -51,7 +52,7 @@ export default function ProductList({
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[router.isReady])
   if(categoryId) return (
-    <main>
+    <Auth role="NON">
         <Head>
             <title>{category ? `${category.find(cate => cate.categoryId === categoryId)?.categoryName === 'all' ? '단품' : category.find(cate => cate.categoryId === categoryId)?.categoryName} - `:''}예스어스</title>
         </Head>
@@ -79,7 +80,7 @@ export default function ProductList({
             }} keyword={keyword} />
             <div className="flex justify-between items-center mb-8">
                 <div>총 <b className="fcg">{product.data?.content?.totalCount}</b>개</div>
-                <Select value={sort} setValue={(e) => {
+                {sort && <Select value={sort} setValue={(e) => {
                     setSort(e.target.value)
                     replace('sort', e.target.value)
                 }} size="large" options={[
@@ -87,7 +88,7 @@ export default function ProductList({
                     ['인기순', 'POPULAR_ORDER'],
                     ['낮은가격순', 'LOW_PRICE_ORDER'],
                     ['높은가격순', 'HIGH_PRICE_ORDER']
-                ]} />
+                ]} />}
             </div>
             <div className="grid grid-cols-2 gap-8" css={css`
                 @media (min-width: ${mobileWidth}px) {grid-template-columns:repeat(3,1fr);}
@@ -99,7 +100,7 @@ export default function ProductList({
         </Container>
         )}
       </>}
-    </main>
+    </Auth>
   )
 }
 

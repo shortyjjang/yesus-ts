@@ -6,29 +6,32 @@ import { useMutation, useQuery } from 'react-query';
 import PostProductItem from './product';
 import { bbsInfoType } from '@/atom/board';
 import PostHeader from './header';
-import Button from '@/components/button';
+import Button from '@/layout/button';
 import { useRouter } from 'next/router';
 import { bbsName } from '@/layout/board';
 import { userInfo } from '@/atom/user';
 import { useRecoilValue } from 'recoil';
 import CommentIndex from './comment';
 import { mobileWidth } from '@/layout/header';
+import { ReactNode, useState } from "react";
+import Confirm from "@/layout/confirm";
+import { notFound } from "next/navigation";
+import { set } from "react-hook-form";
 
 export default function Post({
     articleId,
-    setAlert,
     bbsId,
     thisBBSInfo
 }:{
     articleId: string
-    setAlert: (msg: string) => void
     bbsId: number,
     thisBBSInfo: bbsInfoType
 }) {
   const router = useRouter()
   const { id } = router.query
+  const [alert, setAlert] = useState<ReactNode | null>(null)
   const user = useRecoilValue(userInfo)
-  const {data:post, refetch} = useQuery(['bbsDetail', articleId], async () => {
+  const {data:post, refetch, isError} = useQuery(['bbsDetail', articleId], async () => {
       const request:ApiResponseType = await Api.get(
         `/api/board/v1/${bbsId}/${articleId}`,
         {
@@ -40,8 +43,19 @@ export default function Post({
         }
       )
       if(request?.meta?.resultMsg) {
-          setAlert(request.meta.resultMsg)
-          return;
+        setAlert(<Confirm onClose={() => {
+          setAlert(null)
+          router.push(`/${bbsName(thisBBSInfo.id)}`)
+        }}>{request?.meta?.resultMsg}</Confirm>)
+        
+        return;
+      }
+      if(!request.content) {
+        setAlert(<Confirm onClose={() => {
+          setAlert(null)
+          router.push(`/${bbsName(thisBBSInfo.id)}`)
+        }}>존재하지 않는 게시글 입니다.</Confirm>)
+        return;
       }
       const data:PostType = request.content
       return data
@@ -61,13 +75,18 @@ export default function Post({
       },
       {			// 옵션
         onError: () => { 
-          setAlert('네트워크에 문제가 있어 추천을 할 수 없습니다.')
+          setAlert(<Confirm onClose={() => setAlert(null)}>삭제에 실패하였습니다.</Confirm>)
         },
         onSuccess: () => {
-          setAlert('삭제되었습니다.')
+          setAlert(<Confirm onClose={() => setAlert(null)}>삭제되었습니다.</Confirm>)
         },
       }
   );
+  if(isError) setAlert(<Confirm onClose={() => {
+    setAlert(null)
+    router.push(`/${bbsName(thisBBSInfo.id)}`)
+  }}>존재하지 않는 게시글 입니다.</Confirm>)
+  if(alert && !post) return alert
   if(post) return (
     <div>
       {thisBBSInfo.useProductYn === 'Y' && post.productId && post.productImage && 
@@ -151,6 +170,7 @@ export default function Post({
       {thisBBSInfo.commentUseYn === "Y" && post.commentList && (
         <CommentIndex refetch={refetch} commentList={post.commentList} setAlert={setAlert} loop={thisBBSInfo.replyCommentUseYn === 'Y'} articleId={post.id} bbsId={thisBBSInfo.id} />
       )}
+      {alert && alert}
     </div>
   )
 }
@@ -175,6 +195,8 @@ export type PostType = {
     optionName?: string,
     questionStatus?: string,
     replyContents?: string,
+    categoryId?:number,
+    parentId?:number,
     fileList: {
       id: number,
       managementId: number,
@@ -189,7 +211,7 @@ export type PostType = {
 }
 
 export type PostParamType = {
-  articleId: string,
+  articleId?: string,
   customerMallCd: string,
   customerUid: string,
   managementId: number,

@@ -8,7 +8,7 @@ import { userInfo } from "@/atom/user"
 import { useRecoilValue } from "recoil"
 import { useRouter } from "next/router"
 import { ReactNode, useState } from "react"
-import Confirm from "@/components/confirm"
+import Confirm from "@/layout/confirm"
 
 export default function Footer() {
     const user = useRecoilValue(userInfo)
@@ -33,7 +33,10 @@ export default function Footer() {
                                 ? router.push('/qna')
                                 : setShowAlert(<Confirm 
                                     onClose={() => setShowAlert(null)}
-                                    onSuccess={() => router.push('/login?returnUrl=/qna')}
+                                    onSuccess={() => {
+                                        router.push('/login?returnUrl=/qna')
+                                        setShowAlert(null)
+                                    }}
                                     >
                                     <p>로그인 후 이용 가능합니다.</p>
                                 </Confirm>)

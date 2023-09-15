@@ -1,15 +1,17 @@
 import { CategoryType } from "@/layout/product/category";
 import { Api, ApiResponseType } from "@/util/api";
 import { GetStaticPropsContext } from "next";
-import { userInfo } from '@/atom/user';
-import { useRecoilValue } from "recoil";
 import { NextSeo } from "next-seo";
 import ProductDetailView, { ProductResponseType } from "@/layout/product/detail";
+import Confirm from "@/layout/confirm";
+import { useRouter } from "next/router";
+import Auth from "@/layout/auth";
 
 export default function ProductDetail({post}: {post: ProductResponseType}) {
-    const user = useRecoilValue(userInfo)
+    const router = useRouter()
+    if(!post) return (<Confirm onClose={() => router.push('/product')}>존재하지 않는 상품입니다.</Confirm>)
     return (
-        <>
+        <Auth role="NON">
             <NextSeo
                 title={`${post.productName ? post.productName : "유기농, 못난이 농산물"} - 예스어스`}
                 description={post.productSummaryDesc}
@@ -31,7 +33,7 @@ export default function ProductDetail({post}: {post: ProductResponseType}) {
             {post.productGubun === '단일상품' ?
                 <ProductDetailView post={post}/>
             : <></>}
-        </>
+        </Auth>
     )
 }
 

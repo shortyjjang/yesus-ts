@@ -6,29 +6,37 @@ import { useForm } from 'react-hook-form'
 import Score from './score'
 import AddOrderProduct from './product/order'
 import AddProduct from './product'
-import Button from '@/components/button'
+import Button from '@/layout/button'
 import { useRouter } from "next/router"
 import { bbsName } from "../.."
 import AttachedFile from "@/components/input/file"
 import PreviewImage from "@/components/input/preview_image"
+import { PostType } from ".."
 
 export default function AddForm({
     thisBBSInfo,
-    articleId,
     setAlert,
     opId,
     saveData,
     productId,
+    post
 }:{
     thisBBSInfo: bbsInfoType
-    articleId?: string
     setAlert: (msg: string) => void
     opId?: string
-    saveData: (data: any, files: File[]) => void
+    saveData: (data: any, files: File[], deleteBbsFileIds: number[]) => void
     productId?: string
+    post?: PostType
 }) {
     const {register, handleSubmit, watch, setValue} = useForm({
-        defaultValues: {
+        defaultValues: post ? {
+            score: post.score,
+            contents: post.contents,
+            secretYn: post.secretYn === 'Y' ? true : false,
+            categoryId: post.categoryId,
+            title: post.title,
+            productId: post.productId,
+        }:{
             score: '5',
             contents: thisBBSInfo.defaultContentsUseYn === 'Y' && thisBBSInfo.defaultContents ? thisBBSInfo.defaultContents :'',
             secretYn: false,
@@ -43,9 +51,10 @@ export default function AddForm({
     const contents = watch("contents");
     const formClass = 'px-10 py-6 border border-solid border-gray-300 w-full'
     const [files, setFiles] = useState<File[]>([])
+    const [deleteBbsFileIds, setDeleteBbsFileIds] = useState<number[]>([])
     return (
         <form onSubmit={handleSubmit((data) => {
-            saveData(data, files)
+            saveData(data, files, deleteBbsFileIds)
         })}>
             {thisBBSInfo.id === 2 ?(
                 !opId && <div>
@@ -88,7 +97,7 @@ export default function AddForm({
                 {thisBBSInfo.scoreUseYn === 'Y' && <Field label={!opId ? '평점' : undefined} className={!opId ? `
                     h-[7rem]
                 `:``}>
-                    <Score score={score} register={register} />
+                    <Score score={String(score)} register={register} />
                 </Field>}
                 <div className="relative">
                     <textarea {...register("contents")} className={`${formClass} h-[40rem] resize-none`} onKeyDown={(e) => {
@@ -111,6 +120,15 @@ export default function AddForm({
                 {thisBBSInfo.fileUploadUseYn === 'Y' && <Field label={!opId ? '파일첨부' : undefined} className={!opId ? `
                 `:``}>
                     <div className="flex gap-4">
+                        {/* 수정시 첨부파일 */}
+                        {post && post?.fileList.length > 0 && post?.fileList.filter(file => deleteBbsFileIds.findIndex(id => id === file.id) < 0).map((file) => (
+                            <PreviewImage 
+                                path={file.path} 
+                                key={file.id} 
+                                onDelete={() => setDeleteBbsFileIds([...deleteBbsFileIds, file.id])} 
+                            />
+                        ))}
+                        {/* 새 첨부파일 이미지 미리보기 */}
                         {files.length > 0 && files.map((file) => (
                             <PreviewImage 
                                 file={file} 
@@ -165,11 +183,12 @@ interface BbsFormType {
     opId?: string,
     files?: File[]
     managementParentId?:number
-    parentId?: string
+    parentId?: number
+    deleteBbsFileIds?: number[]
 }
 
 export interface BBSFormApiType extends BbsFormType {
-    
+    articleId?: string,
     managementId: number, //게시판 아이디
     customerMallCd: string,
     customerUid: string

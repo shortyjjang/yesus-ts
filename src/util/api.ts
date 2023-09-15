@@ -32,7 +32,7 @@ export const AuthApi = axios.create({
 Api.interceptors.response.use(
   async (response: AxiosResponse) => {
     const {data, config} = response
-    if (response.data.meta.resultMsg || response.status !== 200) {
+    if (String(response.data.meta.resultMsg).includes('만료') || String(response.data.meta.resultMsg).includes('jwt') || response.status !== 200) {
       const request = await getaccessToken();
       if (request && request.username && Cookies.get("accessToken")) {
         let newConfig = config?.headers
@@ -46,17 +46,14 @@ Api.interceptors.response.use(
           : config;
         return axios(newConfig);
       }
+      location.href= "/logout"
     }
     return response.data;
   },
 
   async (error) => {
-    if (
-      (error.response.data &&
-        error.response.data.meta &&
-        error.response.data.meta.resultMsg) ||
-      error.response.status !== 200
-    ) {
+    const response = error.response;
+    if ((response.data.meta?.resultMsg && (String(response.data.meta?.resultMsg).includes('만료') || String(response.data.meta?.resultMsg).includes('jwt'))) || response.status !== 200) {
       const request = await getaccessToken();
       if (request && request.username && Cookies.get("accessToken")) {
         let newConfig = {
@@ -71,14 +68,12 @@ Api.interceptors.response.use(
         return axios(newConfig);
       }
       Cookies.remove("accessToken");
-      return {
-        meta: {
-          resultMsg: error.response.data?.meta?.resultMsg
-            ? error.response.data?.meta?.resultMsg
-            : "잘못된 요청입니다",
-        },
-      };
     }
-    return error.response.data;
+    if(response.data?.meta?.resultMsg) return {
+      meta: {
+        resultMsg: response.data?.meta?.resultMsg
+      },
+    };
+    return response.data;
   }
 );

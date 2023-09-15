@@ -11,15 +11,16 @@ import { userInfo } from "@/atom/user"
 import { useQuery } from "react-query"
 
 import 'swiper/css'
-import Confirm from "@/components/confirm"
-import { useState } from "react"
+import Confirm from "@/layout/confirm"
+import { ReactNode, useState } from "react"
+import Container from "../container"
 
 export default function TagRecipeList({
     tagIds
 }:{
     tagIds: string
 }) {
-    const [alert, setAlert] = useState<string | null>(null)
+    const [alert, setAlert] = useState<string | ReactNode | null>(null)
     const user = useRecoilValue(userInfo)
     const recipes = useQuery(['recipes', user.username], 
     async () => {
@@ -27,7 +28,7 @@ export default function TagRecipeList({
     })
     if(!recipes.data) return <></>
     return (
-        <section className="my-20">
+        <Container className="my-20">
             <PageTitle title="예스어스 레시피" inlineCSS="text-align:left;padding:0 2.5rem 2rem;" />
             
             <Swiper
@@ -35,7 +36,7 @@ export default function TagRecipeList({
                 spaceBetween={10}
                 breakpoints={{
                     720: {
-                        slidesPerView: 5.3,
+                        slidesPerView: 4.3,
                         spaceBetween: 30,
                     }
                 }}
@@ -51,7 +52,7 @@ export default function TagRecipeList({
             {alert && <Confirm onClose={() => setAlert(null)}>
                 {alert}
             </Confirm>}
-        </section>
+        </Container>
     )
 }
 

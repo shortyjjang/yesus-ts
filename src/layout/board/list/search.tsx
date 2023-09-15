@@ -1,4 +1,4 @@
-import Button from '@/components/button'
+import Button from '@/layout/button'
 import Select from '@/components/input/select'
 import dayjs from "dayjs"
 import { useRouter } from 'next/router'

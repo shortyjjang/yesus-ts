@@ -4,10 +4,11 @@ import { css } from "@emotion/react"
 import Image from "next/image";
 import Link from "next/link";
 import { userInfo } from "@/atom/user";
-import { useState } from "react";
-import { useRecoilState, useRecoilValue } from "recoil";
-import Confirm from "@/components/confirm";
-import { alertMsg } from "@/atom/alert";
+import { ReactNode, useState } from "react";
+import { useRecoilValue } from "recoil";
+import { useMutation } from "react-query";
+import { Api, ApiResponseType } from "@/util/api";
+import Cookies from "js-cookie";
 export interface RecipeItemType {
     recipeId: number,
     recipeTitle: string,
@@ -18,7 +19,7 @@ export interface RecipeItemType {
     includeRecommendYn: string
 }
 interface RecipeCardProps extends RecipeItemType {
-    setAlert: (msg:string) => void,
+    setAlert: (msg:string | ReactNode) => void,
 }
 export default function RecipeCard({
     recipeId,
@@ -32,6 +33,27 @@ export default function RecipeCard({
 }:RecipeCardProps) {
     const user = useRecoilValue(userInfo)
     const [bookmark, setBookmark] = useState<boolean>(includeRecommendYn === 'Y')
+    const changeBookmark = useMutation('bookmark', async (body:{
+        mallCd: string,
+        mallCustomerId: string,
+        recipeId: number,
+    }) => {
+        const request:ApiResponseType = await Api.post(
+            `/api/customer/v1/recipe/${!bookmark ? 'add':'remove'}BookmarkRecipe`,body, {
+            headers: {
+                Authorization: Cookies.get("accessToken"),
+            },
+        })
+        return request
+    },{
+        onSuccess: (data) => {
+            if(data.meta?.resultMsg) {
+                setAlert(data.meta.resultMsg)
+                return;
+            }
+            setBookmark(!bookmark)
+        }
+    })
   return (
     <>
         <div key={recipeId} className="relative">
@@ -68,8 +90,8 @@ export default function RecipeCard({
                 </small>
             </span>
             <strong
-            className="block mt-1 mb-2"
-            css={css`font-size:2.31rem;`}
+            className="block mt-1 mb-2 py-2"
+            css={css`font-size:2.31rem;line-height:1.2;`}
             dangerouslySetInnerHTML={{ __html: recipeTitle }}
             ></strong>
             {recipeSummary && (
@@ -84,23 +106,21 @@ export default function RecipeCard({
         </Link>
         <button
             title="북마크"
-            className={`absolute top-4 right-4 w-10 h-10 is${bookmark ? "Y" : "N"}`}
-            onClick={async () => {
+            className="absolute top-4 right-4 aspect-square w-20"
+            css={css`
+            background: transparent url(/images/icon-heart${bookmark ? '-on':''}.svg) no-repeat center/contain;
+            `}
+            onClick={() => {
             if (!user.username) {
-                setAlert('로그인 하시겠습니까?\n로그인하시면 북마크 하실 수 있습니다');
+                setAlert(<>로그인 하시겠습니까?<br />
+                로그인 하시면 북마크 하실 수 있습니다</>);
                 return;
             }
-            //   const request = await checkBookmark(
-            //     bookmark,
-            //     recipeId,
-            //     user.username
-            //   );
-            //   if (request === "Y") {
-            //     setBookmark(!bookmark);
-            //     if (bookmarkCallBack) bookmarkCallBack();
-            //   } else {
-            //     setAlert('문제가 생겨 북마크하기에 실패하셨습니다. 다시 시도해주세요');
-            //   }
+            changeBookmark.mutate({
+                mallCd: 'YESUS',
+                mallCustomerId: user.username,
+                recipeId: recipeId,
+            })
             }}
         ></button>
         </div>

@@ -2,12 +2,10 @@
 import { css } from '@emotion/react';
 import { useState, useRef, useEffect, useCallback } from "react";
 import Cookies from "js-cookie";
-import Script from 'next/script';
 import { useMutation } from 'react-query';
 import { OrderType } from '@/atom/order';
 import { Api, ApiResponseType } from '@/util/api';
 import axios, { AxiosError } from 'axios';
-import { resolve } from 'path';
 
 
 export default function NaverBtn({
@@ -168,7 +166,7 @@ export default function NaverBtn({
             Math.round(+new Date() / 3600000)
         }`, () => {
             const { naver } = window;
-            if(naver) naver.NaverPayButton.apply({
+            if(naver && document.getElementById(id)?.innerHTML === '') naver.NaverPayButton.apply({
                 BUTTON_KEY: `${process.env.NEXT_PUBLIC_NAVER_PAY_BUTTON_KEY}`,
                 TYPE: `${/Mobile/.test(navigator.userAgent) ? "M" : ""}A`, //버튼 스타일
                 COLOR: 1, //버튼 색상타입

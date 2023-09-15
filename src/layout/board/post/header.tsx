@@ -8,7 +8,7 @@ import { useMutation } from 'react-query'
 import { useRecoilValue } from 'recoil'
 import { PostParamType } from '.'
 import { bbsInfoType } from '@/atom/board'
-import Button from "@/components/button"
+import Button from "@/layout/button"
 
 export default function PostHeader({
     title,
@@ -63,7 +63,7 @@ export default function PostHeader({
             setAlert('네트워크에 문제가 있어 추천을 할 수 없습니다.')
           },
           onSuccess: () => {
-            setVote(!isVoted)
+            setVote(!vote)
           },
         }
     );
@@ -96,7 +96,7 @@ export default function PostHeader({
             className="flex items-center absolute right-0 top-1/2 -translate-y-1/2"
             css={css`&:before {opacity:0;}`}
           >
-            <Button styleType={isVoted ? 'default' : 'dimmend'}
+            <Button styleType={vote ? 'default' : 'dimmend'}
               size="sm"
               className={`flex gap-1 items-center font-normal`}
               inlineCSS={`
